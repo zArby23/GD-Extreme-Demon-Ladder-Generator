@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project related files and directories
+gd_extreme_demon_ladder_generator/experiments
