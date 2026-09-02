@@ -1,0 +1,43 @@
+from dataclasses import dataclass, field
+from typing import Any
+
+
+@dataclass
+class Publisher:
+    id: str
+    global_name: str | None = field(default="Unknown")
+    
+    @classmethod
+    def from_json(cls, data: dict[str, Any]) -> "Publisher | None":
+        if not data:
+            return None
+        return cls(
+            id=data.get("id", ""),
+            global_name=data.get("global_name", "Unknown"),
+        )
+
+@dataclass
+class DemonLevel:
+    id: str
+    name: str
+    position: str
+    level_id: int
+    gddl_tier: int
+    tags: list[str]
+    song_id: int
+    publisher: Publisher | None
+    
+    @classmethod
+    def from_json(cls, data: dict[str, Any]) -> "DemonLevel | None":
+        if not data:
+            return None
+        return cls(
+            id=data.get("id", ""),
+            name=data.get("name", "Unknown"),
+            position=data.get("position", ""),
+            level_id=data.get("level_id", 0),
+            gddl_tier=data.get("gddl_tier", 0),
+            tags=data.get("tags", []),
+            song_id=data.get("song_id", 0),
+            publisher_global_name=Publisher.from_json(data.get("publisher_global_name")),
+        )
