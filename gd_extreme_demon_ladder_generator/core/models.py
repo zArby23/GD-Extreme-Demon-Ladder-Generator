@@ -8,7 +8,7 @@ class Publisher:
     global_name: str | None = field(default="Unknown")
     
     @classmethod
-    def from_json(cls, data: dict[str, Any]) -> "Publisher | None":
+    def fromJson(cls, data: dict[str, Any]) -> "Publisher | None":
         if not data:
             return None
         return cls(
@@ -20,15 +20,15 @@ class Publisher:
 class DemonLevel:
     id: str
     name: str
-    position: str
+    position: int
     level_id: int
-    gddl_tier: int
+    gddl_tier: float | None = field(default=0)
     tags: list[str]
     song_id: int
     publisher: Publisher | None
     
     @classmethod
-    def from_json(cls, data: dict[str, Any]) -> "DemonLevel | None":
+    def fromJson(cls, data: dict[str, Any]) -> "DemonLevel | None":
         if not data:
             return None
         return cls(
@@ -39,5 +39,5 @@ class DemonLevel:
             gddl_tier=data.get("gddl_tier", 0),
             tags=data.get("tags", []),
             song_id=data.get("song_id", 0),
-            publisher_global_name=Publisher.from_json(data.get("publisher_global_name")),
+            publisher=Publisher.from_json(data.get("publisher", {})),
         )
