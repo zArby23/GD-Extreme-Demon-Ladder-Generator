@@ -8,7 +8,7 @@ class Publisher:
     global_name: str | None = field(default="Unknown")
     
     @classmethod
-    def fromJson(cls, data: dict[str, Any]) -> "Publisher | None":
+    def from_json(cls, data: dict[str, Any]) -> "Publisher | None":
         if not data:
             return None
         return cls(
@@ -28,7 +28,7 @@ class DemonLevel:
     publisher: Publisher | None
     
     @classmethod
-    def fromJson(cls, data: dict[str, Any]) -> "DemonLevel | None":
+    def from_json(cls, data: dict[str, Any]) -> "DemonLevel | None":
         if not data:
             return None
         return cls(

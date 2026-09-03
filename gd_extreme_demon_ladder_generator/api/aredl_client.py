@@ -5,8 +5,7 @@ class AREDLClient:
     def __init__(self, base_url: str, timeout: int):
         self.base_url = base_url
         self.timeout = timeout
-
-    def fetchLevels(self):
+    def fetch_levels(self):
         """Fetches the list of all rated extreme demons from the AREDL API.
 
         Returns:
@@ -22,8 +21,7 @@ class AREDLClient:
         response.raise_for_status()
         
         return response.json()
-
-    def getLevelById(self, levels: list[dict], level_id: int) -> dict | None:
+    def get_level_by_id(self, levels: list[dict], level_id: int) -> dict | None:
         """Retrieves a level from the list based on its ID.
 
         Args:
@@ -34,7 +32,7 @@ class AREDLClient:
             dict | None: The level object if found, otherwise None.
         """
         return next((level for level in levels if level["level_id"] == level_id), None)
-    def getLevelByPosition(self, levels: list[dict], position: int) -> dict | None:
+    def get_level_by_position(self, levels: list[dict], position: int) -> dict | None:
         """Retrieves a level from the list based on its position.
 
         Args:
@@ -45,8 +43,7 @@ class AREDLClient:
             dict | None: The level object if found, otherwise None.
         """
         return next((level for level in levels if level.get("position") == position), None)
-
-    def getLevelByName(self, levels: list[dict], name: str) -> dict | None:
+    def get_level_by_name(self, levels: list[dict], name: str) -> dict | None:
         """Retrieves a level from the list based on its name.
 
         Args:
