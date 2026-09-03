@@ -26,6 +26,6 @@ class DemonLevel:
             level_id=data.get("level_id", 0),
             gddl_tier=data.get("gddl_tier", 0),
             tags=data.get("tags", []),
-            song_id=data.get("song_id", 0),
+            song_id=data.get("song", 0),
             publisher=publisher.get("global_name", ""),
         )
