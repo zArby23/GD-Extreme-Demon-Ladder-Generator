@@ -13,6 +13,16 @@ class LadderBuilder:
         target: int,
         steps: int,
     ) -> list[int]:
+        """Generate a list of positions between start and target
+
+        Args:
+            start (int): The position of the starting level.
+            target (int): The position of the target level.
+            steps (int): Number of steps for the ladder.
+
+        Returns:
+            list[int]: A list of positions.
+        """
         start_log = math.log(start)
         target_log = math.log(target)
         
@@ -31,23 +41,32 @@ class LadderBuilder:
             
         return positions
     
+    @staticmethod
     def get_candidates(
-        self,
-        levels: dict[DemonLevel],
+        levels: list[DemonLevel],
         target: int,
         window: int = 5,
     ) -> list[DemonLevel]:
+        """Get levels within a window of the target position.
+
+        Args:
+            levels (list[DemonLevel]): The list of levels.
+            target (int): The target position.
+            window (int, optional): The window size. Defaults to 5.
+
+        Returns:
+            list[DemonLevel]: A list of levels within the window.
+        """
         maximum_position = target + window
         minimum_position = target - window
-        
+
         candidates = []
-        
-        for level in levels:
-            position = level.position
-            
-            if minimum_position <= position <= maximum_position:
-                candidates.append(level)
-                
+
+        candidates.extend(
+            level
+            for level in levels
+            if minimum_position <= level.position <= maximum_position
+        )
         return candidates
     
     def build(
