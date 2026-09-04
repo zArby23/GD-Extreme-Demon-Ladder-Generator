@@ -14,7 +14,7 @@ class LevelService:
 
         if (level_id is None) == (level_name is None):
             raise ValueError(
-                "Either level_id or level_name must be provided."
+                "Either the Level ID or the Level Name must be provided."
             )
 
         levels = self.client.fetch_levels()
