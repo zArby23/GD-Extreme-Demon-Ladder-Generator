@@ -25,6 +25,7 @@ class LevelService:
                 level_id,
             )
         else:
+            assert level_name is not None
             level = self.client.find_level_by_name(
                 levels,
                 level_name.lower(),
@@ -36,5 +37,8 @@ class LevelService:
         detailed_level = self.client.fetch_level(
             level["level_id"]
         )
+        
+        if detailed_level is None:
+            return None
 
         return DemonLevel.from_json(detailed_level)
