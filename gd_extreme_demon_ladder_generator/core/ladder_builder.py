@@ -1,7 +1,7 @@
 import math
 
 from gd_extreme_demon_ladder_generator.core.models import DemonLevel
-
+from gd_extreme_demon_ladder_generator.core.candidate_selector import CandidateSelector
 
 class LadderBuilder:
     def __init__(self, levels: list[DemonLevel]):
@@ -23,6 +23,11 @@ class LadderBuilder:
         Returns:
             list[int]: A list of positions.
         """
+        if start <= 0 or target <=0:
+            raise ValueError("The positions of the levels must be greater than 0.")
+        if steps <= 0:
+            raise ValueError("The number of steps must be greater than 0.")
+        
         start_log = math.log(start)
         target_log = math.log(target)
         
@@ -41,41 +46,19 @@ class LadderBuilder:
             
         return positions
     
-    @staticmethod
-    def get_candidates(
-        levels: list[DemonLevel],
-        target: int,
-        window: int = 5,
-    ) -> list[DemonLevel]:
-        """Get levels within a window of the target position.
-
-        Args:
-            levels (list[DemonLevel]): The list of levels.
-            target (int): The target position.
-            window (int, optional): The window size. Defaults to 5.
-
-        Returns:
-            list[DemonLevel]: A list of levels within the window.
-        """
-        maximum_position = target + window
-        minimum_position = target - window
-
-        candidates = []
-
-        candidates.extend(
-            level
-            for level in levels
-            if minimum_position <= level.position <= maximum_position
-        )
-        return candidates
-    
     def build(
         self,
         start: DemonLevel,
         target: DemonLevel,
         steps: int,
-        windows: int = 5,
+        window: int = 5,
     ) -> list[DemonLevel]:
+        
+        if start.position < target.position:
+            raise ValueError("The starting level must be lower in the list than the target level.")
+        
+        if window < 0:
+            raise ValueError("The window between levels must be positive.")
         
         positions = self.generate_log_positions(
             start.position,
@@ -83,23 +66,36 @@ class LadderBuilder:
             steps,
         )
         
-        ladder = []
+        ladder = [start]
+        previous = start
+        used_ids = {start.level_id, target.level_id}
         
         for position in positions:
-            candidates = self.get_candidates(
+            candidates = CandidateSelector.get_candidates(
                 self.levels,
                 position,
-                windows,
+                window,
+            )
+            unused_candidates = [
+                candidate
+                for candidate in candidates
+                if candidate.level_id not in used_ids
+            ]
+            
+            best_candidate = CandidateSelector.select_best_candidate(
+                unused_candidates,
+                previous,
+                target
             )
             
-            if not candidates:
+            if best_candidate is None:
                 continue
             
-            candidate = min(
-                candidates,
-                key=lambda level: abs(level.position - position),
-            )
+            ladder.append(best_candidate)
+            previous = best_candidate
+            used_ids.add(best_candidate.level_id)
             
-            ladder.append(candidate)
-        
+        if ladder[-1].level_id != target.level_id:
+            ladder.append(target)
+            
         return ladder
