@@ -217,5 +217,8 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# Visual Studio Code
+.vscode/
+
 # Project related files and directories
 gd_extreme_demon_ladder_generator/experiments
