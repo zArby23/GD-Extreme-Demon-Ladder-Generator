@@ -80,11 +80,6 @@ VERSION_VALUES = {
 class CandidateScoring:
     @staticmethod
     def get_tags(level: DemonLevel) -> set[str]:
-        if level is None:
-            return set()
-        
-        if isinstance(level, dict):
-            level = DemonLevel.from_json(level)
         return set(level.tags or [])
     @staticmethod
     def get_gameplay_tags(level: DemonLevel) -> set[str]:
