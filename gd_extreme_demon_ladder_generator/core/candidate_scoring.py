@@ -67,11 +67,11 @@ LENGTH_VALUES = {
 VERSION_VALUES = {
     "1.5": 0,
     "1.6": 1,
-    "1.6ps": 1,
+    "1.6PS": 1,
     "1.7": 2,
     "1.8": 3,
     "1.9": 4,
-    "1.9ps": 4,
+    "1.9PS": 4,
     "2.0": 5,
     "2.1": 6,
     "2.2": 7,
@@ -79,32 +79,40 @@ VERSION_VALUES = {
 
 class CandidateScoring:
     @staticmethod
-    def get_tags(level: DemonLevel) -> set[str]:
-        return set(level.tags or [])
+    def get_tags(level: DemonLevel | dict | None) -> set[str]:
+        level_obj = DemonLevel.coerce(level)
+        if level_obj is None:
+            return set()
+        return set(level_obj.tags or [])
+
     @staticmethod
-    def get_gameplay_tags(level: DemonLevel) -> set[str]:
+    def get_gameplay_tags(level: DemonLevel | dict | None) -> set[str]:
         return (
             CandidateScoring.get_tags(level)
             & GAMEPLAY_TAGS
         )
+
     @staticmethod
-    def get_vehicle_tags(level: DemonLevel) -> set[str]:
+    def get_vehicle_tags(level: DemonLevel | dict | None) -> set[str]:
         return (
             CandidateScoring.get_tags(level)
             & VEHICLE_TAGS
         )
+
     @staticmethod
-    def get_length(level: DemonLevel) -> int | None:
+    def get_length(level: DemonLevel | dict | None) -> int | None:
         tags = CandidateScoring.get_tags(level)
 
         return next((value for tag, value in LENGTH_VALUES.items() if tag in tags), None)
+
     @staticmethod
-    def get_version(level: DemonLevel) -> int | None:
+    def get_version(level: DemonLevel | dict | None) -> int | None:
         tags = CandidateScoring.get_tags(level)
-        
+
         return next((value for tag, value in VERSION_VALUES.items() if tag in tags), None)
+
     @staticmethod
-    def has_nerve_control(level: DemonLevel) -> bool:
+    def has_nerve_control(level: DemonLevel | dict | None) -> bool:
         return "Nerve Control" in CandidateScoring.get_tags(level)
     @staticmethod
     def calculate_tag_transition_score(
