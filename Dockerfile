@@ -14,6 +14,7 @@ COPY gd_extreme_demon_ladder_generator ./gd_extreme_demon_ladder_generator
 COPY manage.py ./
 
 RUN pip install --no-cache-dir --only-binary=:all: \
+        --require-hashes \
         --requirement requirements.lock \
         --requirement requirements-build.lock \
     && pip install --no-cache-dir --no-build-isolation --no-deps . \
