@@ -39,7 +39,6 @@ class AREDLClientTests(unittest.TestCase):
         response.json.return_value = {"level": "unexpected"}
         client = AREDLClient("https://example.test", timeout=1)
 
-        with patch("requests.get", return_value=response), self.assertRaises(
-            AREDLClientError
-        ):
-            client.fetch_levels()
+        with patch("requests.get", return_value=response):
+            with self.assertRaises(AREDLClientError):
+                client.fetch_levels()

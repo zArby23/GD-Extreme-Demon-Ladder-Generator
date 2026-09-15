@@ -1,13 +1,15 @@
 import os
+import secrets
 from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "local-development-only")
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"
-if not DEBUG and not os.getenv("DJANGO_SECRET_KEY"):
+configured_secret_key = os.getenv("DJANGO_SECRET_KEY")
+if not DEBUG and not configured_secret_key:
     raise RuntimeError("DJANGO_SECRET_KEY must be set in production")
+SECRET_KEY = configured_secret_key or secrets.token_urlsafe(50)
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv(
@@ -30,6 +32,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"

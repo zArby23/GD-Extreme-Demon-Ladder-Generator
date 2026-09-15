@@ -9,6 +9,9 @@ from gd_extreme_demon_ladder_generator.core.models import DemonLevel
 from gd_extreme_demon_ladder_generator.services.level_service import LevelService
 
 
+AREDL_LEVELS_CACHE_KEY = "aredl:levels"
+
+
 def _level_payload(level: DemonLevel, position: int) -> dict:
     data = asdict(level)
     data["position"] = position
@@ -16,7 +19,7 @@ def _level_payload(level: DemonLevel, position: int) -> dict:
 
 
 def get_level_service() -> LevelService:
-    cached_levels = cache.get("aredl:levels")
+    cached_levels = cache.get(AREDL_LEVELS_CACHE_KEY)
     client = AREDLClient(
         settings.AREDL_BASE_URL,
         settings.AREDL_REQUEST_TIMEOUT,
@@ -24,7 +27,7 @@ def get_level_service() -> LevelService:
     if cached_levels is None:
         service = LevelService(client)
         cache.set(
-            "aredl:levels",
+            AREDL_LEVELS_CACHE_KEY,
             [asdict(level) for level in service.levels],
             timeout=settings.AREDL_CACHE_TTL,
         )
@@ -33,7 +36,7 @@ def get_level_service() -> LevelService:
 
 
 def clear_level_cache() -> None:
-    cache.delete("aredl:levels")
+    cache.delete(AREDL_LEVELS_CACHE_KEY)
 
 
 def _find_level(service: LevelService, value: str) -> DemonLevel | None:
