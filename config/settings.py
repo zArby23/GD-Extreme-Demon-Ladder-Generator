@@ -5,7 +5,9 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "local-development-only")
-DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() == "true"
+DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"
+if not DEBUG and not os.getenv("DJANGO_SECRET_KEY"):
+    raise RuntimeError("DJANGO_SECRET_KEY must be set in production")
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv(
