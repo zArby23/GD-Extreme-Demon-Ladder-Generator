@@ -1,7 +1,9 @@
+from datetime import timedelta
 from unittest.mock import patch
 
 from django.conf import settings
 from django.test import TestCase, override_settings
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from ladder.models import LadderGeneration
@@ -129,3 +131,26 @@ class LadderApiTests(TestCase):
             ).count(),
             2,
         )
+
+    @override_settings(HISTORY_RETENTION_DAYS=1)
+    def test_history_excludes_expired_records_on_get(self):
+        session_key = self.client.session.session_key
+        if not session_key:
+            self.client.session.create()
+            session_key = self.client.session.session_key
+        old_generation = LadderGeneration.objects.create(
+            session_key=session_key,
+            start="1",
+            target="2",
+            steps=2,
+            window=5,
+            result=[],
+        )
+        LadderGeneration.objects.filter(pk=old_generation.pk).update(
+            created_at=timezone.now() - timedelta(days=2)
+        )
+
+        response = self.client.get("/api/ladders/history/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 0)
