@@ -8,9 +8,10 @@ version = "0.1.0"
 description = "Geometry Dash Extreme Demon ladder generator"
 requires-python = ">=3.11"
 dependencies = [
-    "Django>=5.2,<6.0",
-    "djangorestframework>=3.16,<4.0",
-    "requests>=2.31,<3.0",
+    "Django==5.2.17",
+    "djangorestframework==3.18.1",
+    "gunicorn==23.0.0",
+    "requests==2.34.2",
 ]
 
 [tool.setuptools.packages.find]

@@ -29,17 +29,45 @@ class AREDLClient:
 
         return response
 
+    def _get_json(self, endpoint: str):
+        try:
+            return self._get_request(endpoint).json()
+        except ValueError as error:
+            raise AREDLClientError(
+                f"AREDL returned invalid JSON for {endpoint}"
+            ) from error
+
     def fetch_levels(self) -> list[DemonLevel]:
         """Fetches the list of all rated extreme demons from the AREDL API."""
         endpoint = f"{self.base_url}/aredl/levels"
-        raw_levels = self._get_request(endpoint).json()
-        return DemonLevel.normalize_levels(raw_levels)
+        raw_levels = self._get_json(endpoint)
+        if not isinstance(raw_levels, list) or not all(
+            isinstance(level, dict) for level in raw_levels
+        ):
+            raise AREDLClientError(
+                f"AREDL returned an invalid levels payload for {endpoint}"
+            )
+        try:
+            return DemonLevel.normalize_levels(raw_levels)
+        except (AttributeError, TypeError, ValueError) as error:
+            raise AREDLClientError(
+                f"AREDL returned invalid level data for {endpoint}"
+            ) from error
 
     def fetch_level(self, level_id: int) -> DemonLevel | None:
         """Retrieves a level from the list based on its ID."""
         endpoint = f"{self.base_url}/aredl/levels/{level_id}"
-        raw_level = self._get_request(endpoint).json()
-        return DemonLevel.from_json(raw_level)
+        raw_level = self._get_json(endpoint)
+        if raw_level is not None and not isinstance(raw_level, dict):
+            raise AREDLClientError(
+                f"AREDL returned an invalid level payload for {endpoint}"
+            )
+        try:
+            return DemonLevel.from_json(raw_level)
+        except (AttributeError, TypeError, ValueError) as error:
+            raise AREDLClientError(
+                f"AREDL returned invalid level data for {endpoint}"
+            ) from error
 
     def find_level_by_id(
         self,

@@ -43,6 +43,10 @@ class DemonLevel:
             return None
         
         publisher = data.get("publisher") or {}
+        if isinstance(publisher, dict):
+            publisher_name = publisher.get("global_name", "")
+        else:
+            publisher_name = str(publisher)
         
         return cls(
             id=data.get("id", ""),
@@ -52,5 +56,5 @@ class DemonLevel:
             gddl_tier=data.get("gddl_tier", 0),
             tags=data.get("tags", []),
             song_id=data.get("song", 0),
-            publisher=publisher.get("global_name", ""),
+            publisher=publisher_name,
         )

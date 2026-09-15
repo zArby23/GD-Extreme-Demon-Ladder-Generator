@@ -74,7 +74,7 @@ class LadderBuilder:
         previous = start
         used_ids = {start.level_id, target.level_id}
 
-        for position in positions:
+        for position in positions[1:-1]:
             candidates = CandidateSelector.get_candidates(
                 self.levels,
                 position,
