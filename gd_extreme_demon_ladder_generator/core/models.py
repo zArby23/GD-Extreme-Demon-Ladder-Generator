@@ -12,13 +12,38 @@ class DemonLevel:
     tags: list[str] | None = field(default_factory=list)
     song_id: int | None = field(default=0)
     publisher: str | None = field(default="")
+
+    @staticmethod
+    def coerce(level: "DemonLevel | dict[str, Any] | None") -> "DemonLevel | None":
+        if level is None:
+            return None
+
+        if isinstance(level, DemonLevel):
+            return level
+
+        return DemonLevel.from_json(level)
+
+    @classmethod
+    def normalize_levels(
+        cls,
+        levels: list["DemonLevel | dict[str, Any]"] | None,
+    ) -> list["DemonLevel"]:
+        normalized: list[DemonLevel] = []
+
+        for level in levels or []:
+            candidate = cls.coerce(level)
+            if candidate is not None:
+                normalized.append(candidate)
+
+        return normalized
     
     @classmethod
     def from_json(cls, data: dict[str, Any]) -> "DemonLevel | None":
         if not data:
             return None
         
-        publisher = data.get("publisher",{})
+        publisher = data.get("publisher") or {}
+        
         return cls(
             id=data.get("id", ""),
             name=data.get("name", "Unknown"),
