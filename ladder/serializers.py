@@ -23,3 +23,10 @@ class LadderGenerationSerializer(serializers.ModelSerializer):
             "warnings",
             "created_at",
         )
+
+
+class LadderHistorySerializer(serializers.Serializer):
+    results = LadderGenerationSerializer(many=True)
+    count = serializers.IntegerField()
+    next = serializers.IntegerField(allow_null=True)
+    previous = serializers.IntegerField(allow_null=True)
