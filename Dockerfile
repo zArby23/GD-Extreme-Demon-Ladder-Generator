@@ -5,7 +5,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY pyproject.toml ./
 COPY requirements.lock ./
 COPY config ./config
 COPY ladder ./ladder
@@ -13,9 +12,7 @@ COPY gd_extreme_demon_ladder_generator ./gd_extreme_demon_ladder_generator
 COPY manage.py ./
 
 RUN pip install --no-cache-dir --only-binary=:all: --requirement requirements.lock \
-    && pip install --no-cache-dir --no-deps .
-
-RUN addgroup --system django \
+    && addgroup --system django \
     && adduser --system --ingroup django django \
     && mkdir -p /app/data \
     && chown -R django:django /app
