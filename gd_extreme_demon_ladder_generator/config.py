@@ -1,18 +1,11 @@
-# API ENDPOINTS
+import os
 
 
-# All Rated Extreme Demons List (AREDL)
+AREDL_BASE_URL = os.getenv("AREDL_BASE_URL", "https://api.aredl.net/v2/api")
+REQUEST_TIMEOUT = int(os.getenv("AREDL_REQUEST_TIMEOUT", "10"))
 
-AREDL_BASE_URL = "https://api.aredl.net/v2/api"
-
-# CONFIGURACIONES TECNICAS
-
-REQUEST_TIMEOUT = 10  # Tiempo de espera para las solicitudes HTTP en segundos
-
-# CONFIGURACIONES DE LA LADDER
-
-GAMEPLAY_WEIGHT = 5
-VEHICLE_WEIGHT = 4
-LENGTH_WEIGHT = 3
-NERVE_CONTROL_WEIGHT = 3
-VERSION_WEIGHT = 2
+GAMEPLAY_WEIGHT = float(os.getenv("GAMEPLAY_WEIGHT", "5"))
+VEHICLE_WEIGHT = float(os.getenv("VEHICLE_WEIGHT", "4"))
+LENGTH_WEIGHT = float(os.getenv("LENGTH_WEIGHT", "3"))
+NERVE_CONTROL_WEIGHT = float(os.getenv("NERVE_CONTROL_WEIGHT", "3"))
+VERSION_WEIGHT = float(os.getenv("VERSION_WEIGHT", "2"))

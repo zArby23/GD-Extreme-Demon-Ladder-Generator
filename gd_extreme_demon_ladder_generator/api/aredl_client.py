@@ -3,6 +3,10 @@ import requests
 from gd_extreme_demon_ladder_generator.core.models import DemonLevel
 
 
+class AREDLClientError(RuntimeError):
+    """Raised when AREDL cannot be reached or returns an invalid response."""
+
+
 class AREDLClient:
     def __init__(self, base_url: str, timeout: int):
         self.base_url = base_url
@@ -15,12 +19,13 @@ class AREDLClient:
         return getattr(level, field, None)
 
     def _get_request(self, endpoint: str):
-        response = requests.get(
-            endpoint,
-            timeout=self.timeout,
-        )
-
-        response.raise_for_status()
+        try:
+            response = requests.get(endpoint, timeout=self.timeout)
+            response.raise_for_status()
+        except requests.RequestException as error:
+            raise AREDLClientError(
+                f"AREDL request failed for {endpoint}: {error}"
+            ) from error
 
         return response
 
