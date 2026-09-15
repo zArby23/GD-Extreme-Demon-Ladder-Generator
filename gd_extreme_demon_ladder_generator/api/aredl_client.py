@@ -1,81 +1,86 @@
 import requests
 
+from gd_extreme_demon_ladder_generator.core.models import DemonLevel
+
 
 class AREDLClient:
     def __init__(self, base_url: str, timeout: int):
         self.base_url = base_url
         self.timeout = timeout
+
+    @staticmethod
+    def _get_value(level: DemonLevel | dict, field: str):
+        if isinstance(level, dict):
+            return level.get(field)
+        return getattr(level, field, None)
+
     def _get_request(self, endpoint: str):
         response = requests.get(
             endpoint,
-            timeout=self.timeout
+            timeout=self.timeout,
         )
-        
+
         response.raise_for_status()
-        
+
         return response
-    def fetch_levels(self):
-        """Fetches the list of all rated extreme demons from the AREDL API.
 
-        Returns:
-            dict: The JSON response containing the list of extreme demons.
-        """
+    def fetch_levels(self) -> list[DemonLevel]:
+        """Fetches the list of all rated extreme demons from the AREDL API."""
         endpoint = f"{self.base_url}/aredl/levels"
-        
-        return self._get_request(endpoint).json()
-    def fetch_level(self, level_id: int) -> dict | None:
-        """Retrieves a level from the list based on its ID.
+        raw_levels = self._get_request(endpoint).json()
+        return DemonLevel.normalize_levels(raw_levels)
 
-        Args:    
-            level_id (int): The ID of the level to retrieve.
-
-        Returns:
-            dict | None: The level object if found, otherwise None.
-        """
-        
+    def fetch_level(self, level_id: int) -> DemonLevel | None:
+        """Retrieves a level from the list based on its ID."""
         endpoint = f"{self.base_url}/aredl/levels/{level_id}"
-        return self._get_request(endpoint).json()
-    def find_level_by_id(self, levels: list[dict], level_id: int) -> dict | None:
-        """Retrieves a level from the list based on its ID.
+        raw_level = self._get_request(endpoint).json()
+        return DemonLevel.from_json(raw_level)
 
-        Args:
-            levels (list[dict]): The list of levels.
-            level_id (int): The ID of the level to retrieve.
+    def find_level_by_id(
+        self,
+        levels: list[DemonLevel | dict],
+        level_id: int,
+    ) -> DemonLevel | dict | None:
+        return next(
+            (level for level in levels if self._get_value(level, "level_id") == level_id),
+            None,
+        )
 
-        Returns:
-            dict | None: The level object if found, otherwise None.
-        """
-        return next((level for level in levels if level.get("level_id") == level_id), None)
-    def find_level_by_position(self, levels: list[dict], position: int) -> dict | None:
-        """Retrieves a level from the list based on its position.
+    def find_level_by_position(
+        self,
+        levels: list[DemonLevel | dict],
+        position: int,
+    ) -> DemonLevel | dict | None:
+        return next(
+            (level for level in levels if self._get_value(level, "position") == position),
+            None,
+        )
 
-        Args:
-            levels (list[dict]): The list of levels.
-            position (int): The position of the level to retrieve.
+    def find_level_by_name(
+        self,
+        levels: list[DemonLevel | dict],
+        name: str,
+    ) -> DemonLevel | dict | None:
+        normalized_name = name.lower()
+        return next(
+            (
+                level
+                for level in levels
+                if str(self._get_value(level, "name")).lower() == normalized_name
+            ),
+            None,
+        )
 
-        Returns:
-            dict | None: The level object if found, otherwise None.
-        """
-        return next((level for level in levels if level.get("position") == position), None)
-    def find_level_by_name(self, levels: list[dict], name: str) -> dict | None:
-        """Retrieves a level from the list based on its name.
-
-        Args:
-            levels (list[dict]): The list of levels.
-            name (str): The name of the level to retrieve.
-
-        Returns:
-            dict | None: The level object if found, otherwise None.
-        """
-        return next((level for level in levels if level["name"].lower() == name.lower()), None)
-    def find_publisher_by_id(self, levels: list[dict], publisher_id: str) -> dict | None:
-        """Retrieves a publisher from the list based on its ID.
-
-        Args:
-            levels (list[dict]): The list of levels.
-            publisher_id (str): The ID of the publisher to retrieve.
-
-        Returns:
-            dict | None: The publisher object if found, otherwise None.
-        """
-        return next((level for level in levels if level["publisher"]["id"] == publisher_id), None)
+    def find_publisher_by_id(
+        self,
+        levels: list[DemonLevel | dict],
+        publisher_id: str,
+    ) -> DemonLevel | dict | None:
+        return next(
+            (
+                level
+                for level in levels
+                if str(self._get_value(level, "publisher")).lower() == publisher_id.lower()
+            ),
+            None,
+        )
