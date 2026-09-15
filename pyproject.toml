@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gd-extreme-demon-ladder-generator"
+version = "0.1.0"
+description = "Geometry Dash Extreme Demon ladder generator"
+requires-python = ">=3.11"
+dependencies = [
+    "Django>=5.2,<6.0",
+    "djangorestframework>=3.16,<4.0",
+    "requests>=2.31,<3.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["config*", "ladder*", "gd_extreme_demon_ladder_generator*"]

@@ -1,7 +1,11 @@
 import math
+import logging
 
 from gd_extreme_demon_ladder_generator.core.candidate_selector import CandidateSelector
 from gd_extreme_demon_ladder_generator.core.models import DemonLevel
+
+
+logger = logging.getLogger(__name__)
 
 
 class LadderBuilder:
@@ -89,7 +93,7 @@ class LadderBuilder:
             )
 
             if best_candidate is None:
-                print(
+                logger.warning(
                     f"No mejor candidato encontrado para la posición {position}; "
                     "se conserva el valor previo."
                 )
