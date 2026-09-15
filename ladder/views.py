@@ -6,6 +6,7 @@ from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
+from django.views.decorators.http import require_GET
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -27,9 +28,14 @@ def _ensure_session(request) -> str:
 
 
 def _history_queryset(request):
-    return LadderGeneration.objects.filter(
+    queryset = LadderGeneration.objects.filter(
         session_key=_ensure_session(request)
     )
+    retention_days = settings.HISTORY_RETENTION_DAYS
+    if retention_days > 0:
+        cutoff = timezone.now() - timedelta(days=retention_days)
+        queryset = queryset.filter(created_at__gte=cutoff)
+    return queryset
 
 
 def _positive_query_int(request, name: str, default: int) -> int:
@@ -43,10 +49,12 @@ def _positive_query_int(request, name: str, default: int) -> int:
 
 
 @ensure_csrf_cookie
+@require_GET
 def csrf_token(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"detail": "CSRF cookie is ready."})
 
 
+@require_GET
 def health_check(request: HttpRequest) -> JsonResponse:
     try:
         with connection.cursor() as cursor:
